@@ -1,0 +1,81 @@
+#!/usr/bin/env bash
+
+. "$(dirname $0)/util/logging.bash"
+
+read -d '' usage <<EOUSAGE
+$0 - List C/C++ toolchain's #include paths.
+
+Usage: $0 [clang|gcc|cc] OPTION
+
+OPTIONS
+      -c  Print C compiler's #include paths.
+      -p  Print C++ compiler's #include paths.
+      -P  Print C and C++ compilers' #include paths.
+
+NOTE
+      For a custom C/C++ compiler, set CC and CXX environment variables.
+EOUSAGE
+
+# Get C or C++ include paths
+get-incl() {
+  case "$1" in
+    "cc") ;&
+    "gcc") ;&
+    "clang")
+      xc='-xc'
+      ;;
+    "cxx") ;&
+    "g++") ;&
+    "clang++")
+      xc='-xc++'
+      ;;
+  esac
+
+  $1 -E -Wp,-v $xc /dev/null  2>&1 \
+   | sed -e '1,/^\s*#include\s\+<\.\.\.>\s\+search\s\+starts\s\+here:\s*/d' \
+   | sed -e '/^\s*End\s\+of\s\+search\s\+list.\s*$/,$d' \
+   | sed -e 's/^\s\+//g; s/\s\+$//g'
+}
+
+
+cc=${CC:-cc}
+cxx=${CXX:-cxx}
+
+[ -z "$1" ] && errcat "$usage" && exit 1
+
+case "$1" in
+  'clang') ;&
+  'clang++')
+    cc='clang'
+    cxx='clang++'
+    shift
+    ;;
+  'gcc') ;&
+  'g++')
+    cc='gcc'
+    cxx='g++'
+    shift
+    ;;
+esac
+
+get-both() { get-incl $cc; get-incl $cxx; }
+
+while getopts 'cpP' opt; do
+  case "${opt}" in
+    c)
+      get-incl $cc
+      ;;
+    p)
+      get-incl $cxx
+      ;;
+    P)
+      sort -u <<<$(get-both)
+      ;;
+    *)
+      errcat "$usage"
+      exit 1
+      ;;
+  esac
+done
+
+shift $((OPTIND-1))
