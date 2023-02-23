@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+
+. $(dirname $0)/util/logging.bash
+
+: '
+  *  Have a derivative project loosely based around another (à la copy-paste)
+  *  that you would like to graft back onto the tree where it came from??
+  *  Try hashwalker!!
+  '
+
+read -d '' usage <<EOUSAGE
+Usage:  $0 BRANCH_A UPSTREAM_BRANCH [START_REFSPEC]
+
+Note:  Commit hashes are walked along UPSTREAM_BRANCH.
+EOUSAGE
+
+[ -z "$1" -o -z "$2" ] && errcat "$usage" && exit 1
+
+branch_a="$1"
+upstream_branch="$2"
+[ -n "$3" ] && refrange="$3~1..$upstream_branch" || refrange=$upstream_branch
+
+hashes=( $(git log --format='%H' $refrange 2>/dev/null) )
+
+declare -a smallest
+for (( i=${#hashes[@]} - 1 ; i>=0 ; i-- )); do
+  # Shrek was here.
+  changed=$(($(echo $(git diff ${hashes[i]} $branch_a --shortstat \
+                      | grep -o '[0-9]\+\s\+' | tail -n +2) \
+               | sed 's/\s\+/+/g')))
+  if [ ${#smallest[@]} -eq 0 ]; then
+    smallest=( ${hashes[i]} $changed )
+    echo -n 'f'
+  else
+    [ $changed -lt ${smallest[1]} ] && smallest[0]=${hashes[i]} && smallest[1]=$changed \
+      && echo -n '!' || echo -n '.'
+  fi
+done
+echo
+
+echo "Smallest diff @ ${smallest[0]}: $(git diff ${smallest[0]} $branch_a --shortstat)"
