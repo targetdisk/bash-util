@@ -41,7 +41,7 @@ get-incl() {
 cc=${CC:-cc}
 cxx=${CXX:-cxx}
 
-[ -z "$1" ] && errcat "$usage" && exit 1
+[ -z "$1" ] && dedcat "$usage"
 
 case "$1" in
   'clang') ;&
@@ -72,8 +72,7 @@ while getopts 'cpP' opt; do
       sort -u <<<$(get-both)
       ;;
     *)
-      errcat "$usage"
-      exit 1
+      dedcat "$usage"
       ;;
   esac
 done
