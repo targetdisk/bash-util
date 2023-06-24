@@ -11,8 +11,6 @@ EOUSAGE
 
 [ -z "$1" ] && dedcat "$usage"
 
-read -d '' PERL <<EOPERL
-print $(cat "$1" | xargs du | awk '{print $1}' | tr $'\n' '+' | sed 's/+$//')
-EOPERL
+kib_terms=$(cat "$1" | xargs du | awk '{print $1}' | tr $'\n' '+' | sed 's/+$//')
 
-perl -e "$PERL"' . "\n";'
+perl -e "print $kib_terms"' . "\n";'
