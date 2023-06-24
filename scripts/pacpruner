@@ -1,0 +1,86 @@
+#!/usr/bin/env bash
+
+: "
+  * This script is stupid and slow.  You probably shouldn't use it.
+  "
+
+. "$(dirname $0)/util/logging.bash"
+
+command -v pacman > /dev/null \
+  || die 'ERROR:  This script only works on systems with the "pacman" package' \
+         ' manager!'
+
+
+read -d '' usage <<EOUSAGE
+$0 allows you to prune files in a directory tree that aren't managed by
+Pacman.  Without the "-r" option it will just print files that aren't managed by
+Pacman to standard output and logging information to standard error.
+
+Usage:  $0 [-r|-h] [-i IGNORE_LIST] PATH ... PATH_N
+
+Options:
+    -r              -  Remove files instead of just printing them to standard
+                       output. (Potentially dangerous!)
+    -i IGNORE_LIST  -  Newline-delimited file containing files that should be
+                       left alone by pacpruner.
+    -h              -  Display this help.
+EOUSAGE
+
+rm=0
+
+[ -z "$1" ] && dedcat "$usage"
+
+while getopts 'rhi:' opt; do
+  case "${opt}" in
+    r)
+      rm=1
+      ;;
+    i)
+      export ignore_files=$(<$OPTARG) || exit 1
+      ;;
+    h)
+      excat "$usage"
+      ;;
+  esac
+done
+
+shift $((OPTIND-1))
+
+export packages=$(pacman -Qqn)
+export rm
+
+_prune() {
+  matching_pkgs=$(pacman -F "$1" | awk '{print $5}' | sed 's/.*\///')
+  if [ -z "$matching_pkgs" ]; then
+    [ $rm -eq 1 ] && sudo rm -rv "$1" || errcho "PRUNE: \"$1\"" && echo "$1"
+  else
+    errcho "matching \"$matching_pkgs\""
+    if [ $(grep -F "$matching_pkgs" <<<"$packages" | wc -l) -eq 0 ]; then
+      [ $rm -eq 1 ] && sudo rm -rv "$1" || errcho "PRUNE: \"$1\"" && echo "$1"
+    else
+      errcho "Ignoring \"$1\""
+    fi
+  fi
+}
+
+prune() {
+  for file in ${@}; do
+    errcho "FILE: $file"
+    if [ -n "$ignore_files" ]; then
+      [ $(grep -F "$file" <<<"$ignore_files" | wc -l) -eq 0 ] \
+        && _prune "$file" \
+        || errcho "Ignoring \"$file\" from IGNORE_LIST."
+    else
+      _prune "$file"
+    fi
+  done
+}
+
+[ $rm -eq 1 ] && sudo -v
+
+export -f errcho die _prune prune
+
+while [ -n "$1" ]; do
+  find $(dirname "${1}") -name $(basename "${1}") -print0 | xargs -0 -I '{}' bash -c 'prune {}'
+  shift
+done
