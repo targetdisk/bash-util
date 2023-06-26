@@ -21,15 +21,19 @@ get-incl() {
   case $(basename "$1") in
     "cc") ;&
     "*-gcc") ;&
+    "gcc*") ;&
     "gcc") ;&
     "clang") ;&
+    "clang*") ;&
     "silly-cc")
       xc='-xc'
       ;;
     "cxx") ;&
     "*-g++") ;&
+    "g++*") ;&
     "g++") ;&
     "clang++") ;&
+    "clang++*") ;&
     "silly-cxx")
       xc='-xc++'
       ;;
