@@ -18,15 +18,19 @@ EOUSAGE
 
 # Get C or C++ include paths
 get-incl() {
-  case "$1" in
+  case $(basename "$1") in
     "cc") ;&
+    "*-gcc") ;&
     "gcc") ;&
-    "clang")
+    "clang") ;&
+    "silly-cc")
       xc='-xc'
       ;;
     "cxx") ;&
+    "*-g++") ;&
     "g++") ;&
-    "clang++")
+    "clang++") ;&
+    "silly-cxx")
       xc='-xc++'
       ;;
   esac
