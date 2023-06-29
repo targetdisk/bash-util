@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+
+: '
+  * Download torrents that make you go NYAA.
+  '
+
+. "$(dirname $0)/util/logging.bash"
+
+read -d '' usage <<EOUSAGE
+Usage: $0 [-h] MAGNET_URI|TORRENT_FILE ...  MAGNET_URI|TORRENT_FILE
+
+OPTIONS
+    -h  Display this help.
+EOUSAGE
+
+while getopts 'h' opt; do
+  case "${opt}" in
+    h)
+      excat "$usage"
+      ;;
+  esac
+done
+
+shift $((OPTIND-1))
+
+aria2c \
+  --check-integrity=true \
+  --continue=true \
+  --bt-save-metadata=true \
+  --bt-max-peers=1000 \
+  --bt-force-encryption=true \
+  --seed-ratio=0.0 \
+  ${@} \
+;
