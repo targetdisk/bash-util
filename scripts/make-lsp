@@ -24,7 +24,7 @@ OPTIONS
 EOU
 
 MAKEFILE=''
-MAKEDIR=''
+MAKEDIR='.'
 DEBUG=0
 
 while getopts 'hdC:f:' opt; do
@@ -36,10 +36,10 @@ while getopts 'hdC:f:' opt; do
       DEBUG=1
       ;;
     C)
-      MAKEDIR="-C'$OPTARG'"
+      MAKEDIR="$OPTARG"
       ;;
     f)
-      MAKEFILE="--file='$OPTARG'"
+      MAKEFILE="--file=$OPTARG"
       ;;
   esac
 done
@@ -50,7 +50,7 @@ COMPILER_RX='^\s*cc|^\s*cxx|^\s*c\+\+|^\s*gcc|^\s*g\+\+|^\s*clang|^\s*clang\+\+'
 
 [ "$DEBUG" -ne 0 ] && set -x
 
-make "$MAKEDIR" "$MAKEFILE" --always-make --dry-run ${@} \
+make "-C$MAKEDIR" "$MAKEFILE" --always-make --dry-run ${@} \
   | grep -E "$COMPILER_RX" \
   | grep -w '\-c' \
-  | jq -nR '[inputs|{directory:".", command:., file: match(" [^ ]+$").string[1:]}]'
+  | jq -nR '[inputs|{directory:"'"$MAKEDIR"'", command:., file: match(" [^ ]+$").string[1:]}]'
