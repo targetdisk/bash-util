@@ -46,9 +46,11 @@ done
 
 shift $((OPTIND-1))
 
+COMPILER_RX='^\s*cc|^\s*cxx|^\s*c\+\+|^\s*gcc|^\s*g\+\+|^\s*clang|^\s*clang\+\+'
+
 [ "$DEBUG" -ne 0 ] && set -x
 
 make "$MAKEDIR" "$MAKEFILE" --always-make --dry-run ${@} \
-  | grep -E '^\s*gcc|^\s*g\+\+|^\s*clang|^\s*clang\+\+' \
+  | grep -E "$COMPILER_RX" \
   | grep -w '\-c' \
   | jq -nR '[inputs|{directory:".", command:., file: match(" [^ ]+$").string[1:]}]'
