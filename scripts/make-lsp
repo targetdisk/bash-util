@@ -6,6 +6,9 @@
 
 . "$(dirname $0)/util/logging.bash"
 
+command -v jq > /dev/null \
+  || die 'ERROR:  Please install the "jq" command!'
+
 define_usage <<EOU
 Usage: $0 [-h] [-C MAKE_DIR] [-f MAKEFILE] [MAKE_TARGET]
 
