@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+
+: '
+  * Attempt to generate clangd compile commands for a GNU Make target.
+  '
+
+. "$(dirname $0)/util/logging.bash"
+
+define_usage <<EOU
+Usage: $0 [-h] [-C MAKE_DIR] [-f MAKEFILE] [MAKE_TARGET]
+
+OPTIONS
+    -h  Display this help.
+
+    -C DIR  Run GNU Make in specific directory.  See make(1) for more info.
+
+    -f MAKEFILE  Tell GNU Make to use a specific Makefile.  See make(1) for more
+                 info.
+
+    -d  Run this program in "debug" mode.
+EOU
+
+MAKEFILE=''
+MAKEDIR=''
+DEBUG=0
+
+while getopts 'hdC:f:' opt; do
+  case "${opt}" in
+    h)
+      xcat <<<"$usage"
+      ;;
+    d)
+      DEBUG=1
+      ;;
+    C)
+      MAKEDIR="-C'$OPTARG'"
+      ;;
+    f)
+      MAKEFILE="--file='$OPTARG'"
+      ;;
+  esac
+done
+
+shift $((OPTIND-1))
+
+[ "$DEBUG" -ne 0 ] && set -x
+
+make "$MAKEDIR" "$MAKEFILE" --always-make --dry-run ${@} \
+  | grep -E '^\s*gcc|^\s*g\+\+|^\s*clang|^\s*clang\+\+' \
+  | grep -w '\-c' \
+  | jq -nR '[inputs|{directory:".", command:., file: match(" [^ ]+$").string[1:]}]'
