@@ -22,8 +22,8 @@ $ PREFIX="$HOME/.local" make install
 
 You can use the bash helpers in two ways:
 
-    1. As a Git submodule
-    2. From Bash's `$PATH` environment variable.
+1. As a Git submodule
+2. From Bash's `$PATH` environment variable.
 
 #### As a Git submodule
 
