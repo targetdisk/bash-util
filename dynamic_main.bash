@@ -1,7 +1,7 @@
 command -v dedcat || \
 	source "$(dirname ${BASH_SOURCE[0]})/logging.bash"
 
-[ -z "${fns[@]}" ] && dedcat 'ERROR: Empty or undefined ${fns[@]} array!'
+[ "${#fns[@]}" -gt 0 ] || dedcat 'ERROR: Empty or undefined ${fns[@]} array!'
 
 read -d '' HELPSTR <<EOH
 Usage:  $0 OPERATION
