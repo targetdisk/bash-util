@@ -46,7 +46,7 @@ done
 
 shift $((OPTIND-1))
 
-COMPILER_RX='^\s*cc|^\s*cxx|^\s*c\+\+|^\s*gcc|^\s*g\+\+|^\s*clang|^\s*clang\+\+'
+COMPILER_RX='^\s*cc|^\s*cxx|^\s*c\+\+|^\s*gcc|^\s*g\+\+|^\s*clang|^\s*clang\+\+|^\s*sdcc'
 
 [ "$DEBUG" -ne 0 ] && set -x
 
