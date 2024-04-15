@@ -23,7 +23,7 @@ SCRIPTS := $(shell for fsname in $(wildcard scripts/*); \
 		   do [ ! -d $$fsname ] && echo $$fsname || :; done)
 DIST_SCRIPTS := $(foreach SCRIPT,$(SCRIPTS),dist/bin/$(shell basename $(SCRIPT)))
 
-dist: dist/bin dist/lib/bash-util $(DIST_HELPERS) $(DIST_HELPER_LINKS) $(DIST_SCRIPTS)
+dist: dist/bin dist/lib/bash-util $(DIST_HELPERS) $(DIST_HELPER_LINKS) $(DIST_SCRIPTS) $(PREFIX)/bin/util
 
 dist/bin:
 	mkdir -pv $@
@@ -42,6 +42,9 @@ dist/lib/bash-util:
 dist/lib/bash-util/%.bash: %.bash
 	cp $< $@
 	chmod 644 $@
+
+$(PREFIX)/bin/util:
+	ln -s $(PREFIX)/lib/bash-util $(PREFIX)/bin/util
 
 install: dist
 	cd dist && \
