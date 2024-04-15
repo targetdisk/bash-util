@@ -1,4 +1,18 @@
-PREFIX ?= /usr/local
+UNAME := $(shell uname)
+ifeq ($(UNAME),Linux)
+	OPEN=xdg-open
+	PREFIX ?= /usr/local
+else ifeq ($(UNAME),Darwin)
+	OPEN=open
+	PREFIX ?= $(HOME)/.local
+else ifeq ($(OS),Windows_NT)
+	OPEN=start
+	PREFIX ?= /usr/local
+else
+	OPEN=xdg-open
+	PREFIX ?= /usr/local
+endif
+
 INSTALL ?= install
 
 HELPERS := $(wildcard *.bash)
@@ -41,13 +55,6 @@ clean:
 .PHONY: dist install
 
 ### README #####################################################################
-
-UNAME := $(shell uname)
-ifeq ($(UNAME),Linux)
-	OPEN=xdg-open
-else ifeq ($(UNAME),Darwin)
-	OPEN=open
-endif
 
 pub.css:
 	wget https://github.com/manuelp/pandoc-stylesheet/raw/acac36b976966f76544176161ba826d519b6f40c/pub.css
