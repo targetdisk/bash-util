@@ -52,7 +52,7 @@ install: dist
 clean:
 	rm -rf dist
 
-.PHONY: dist install
+.PHONY: dist install README
 
 ### README #####################################################################
 
