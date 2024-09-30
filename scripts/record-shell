@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+
+: '
+  * Record sessions with Asciinema for the Librecode project!
+  '
+
+read -d '' usage <<EOUSAGE
+Usage: $0 [-h]
+
+OPTIONS
+    -h  Display this help.
+EOUSAGE
+
+while getopts 'h' opt; do
+  case "${opt}" in
+    h)
+      excat "$usage"
+      ;;
+    *)
+      dedcat "$usage"
+      ;;
+  esac
+done
+
+shift $((OPTIND-1))
+
+. "$(dirname $0)/util/logging.bash"
+. /etc/os-release
+
+timestamp=$(mktimestamp)
+
+case "${ID}" in
+  arch)
+    SUB_ID="${BUILD_ID}"
+    ;;
+  debian)
+    SUB_ID="${VERSION_CODENAME}"
+    ;;
+  *)
+    SUB_ID="unknown"
+    ;;
+esac
+
+rec_prefix="$HOME/librecode/sessions/mine/$ID/$SUB_ID"
+mkdir -p "$rec_prefix"
+
+asciinema rec "$rec_prefix/$timestamp"
