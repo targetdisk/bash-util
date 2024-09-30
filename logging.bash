@@ -6,3 +6,4 @@ dedcat() { (>&2 cat <<<"$@"); exit 1; }
 xcat() { (>&2 cat "$@"); exit 0; }
 excat() { (>&2 cat <<<"$@"); exit 0; }
 die() { errcho $@; exit 1; }
+mktimestamp() { date '+%Y-%m-%d_%s'; }
