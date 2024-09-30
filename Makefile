@@ -29,7 +29,7 @@ dist/bin:
 	mkdir -pv $@
 
 dist/bin/%.bash: %.bash
-	ln -s ../lib/bash-util/$*.bash $@
+	ln -sf ../lib/bash-util/$*.bash $@
 
 dist/bin/%: scripts/% dist/bin
 	sed 's/^\(.\s\+\)\("\)*.\+\/util\//\1\2$(shell \
@@ -44,12 +44,12 @@ dist/lib/bash-util/%.bash: %.bash
 	chmod 644 $@
 
 $(PREFIX)/bin/util:
-	ln -s $(PREFIX)/lib/bash-util $(PREFIX)/bin/util
+	ln -sf $(PREFIX)/lib/bash-util $(PREFIX)/bin/util
 
 install: dist
 	cd dist && \
 		for each in *; \
-			do cp -rv "$$each" "$(PREFIX)/$$each"; \
+			do cp -rv "$$each"/* "$(PREFIX)/$$each/"; \
 		done
 
 clean:
