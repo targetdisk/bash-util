@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+
+: '
+  * Record calls with Julia for future annotation 😻
+  * (just the audio on my end)
+  '
+
+read -d '' usage <<EOUSAGE
+Usage: $0 [-h]
+
+OPTIONS
+    -h  Display this help.
+EOUSAGE
+
+while getopts 'h' opt; do
+  case "${opt}" in
+    h)
+      excat "$usage"
+      ;;
+    *)
+      dedcat "$usage"
+      ;;
+  esac
+done
+
+shift $((OPTIND-1))
+
+. "$(dirname $0)/util/logging.bash"
+
+rec_prefix="$HOME/librecode/Julia Calls 😻"
+mkdir -p "$rec_prefix"
+
+timestamp=$(mktimestamp)
+ffmpeg -f pulse -ac 2 -i default "$rec_prefix/$timestamp.wav"
