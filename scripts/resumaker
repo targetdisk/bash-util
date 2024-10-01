@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+
+: '
+  * Generate my resume using pandoc!
+  '
+
+. "$(dirname $0)/util/logging.bash"
+
+FONT="monofur for Powerline"
+
+read -d '' usage <<EOUSAGE
+Usage: $0 [-h][-f FONT] RESUME_FILE
+
+OPTIONS
+    -f FONT  Specify font by name.
+    -h  Display this help.
+EOUSAGE
+
+while getopts 'f:h' opt; do
+  case "${opt}" in
+    f)
+      FONT=$OPTARG
+      ;;
+    h)
+      excat "$usage"
+      ;;
+    *)
+      dedcat "$usage"
+      ;;
+  esac
+done
+
+shift $((OPTIND-1))
+[ -z "$1" ] && dedcat "$usage"
+
+pandoc $1 \
+  -o $(sed 's/\(.md\)$//' <<<$1).pdf \
+  --pdf-engine=xelatex \
+  -V mainfont="$FONT" \
+  -V fontsize=9pt \
+  -V geometry:margin=0.75in
