@@ -33,7 +33,7 @@ dist/bin/%.bash: %.bash
 
 dist/bin/%: scripts/% dist/bin
 	sed 's/^\(.\s\+\)\("\)*.\+\/util\//\1\2$(shell \
-		sed 's/\([$\/]\)/\\\1/g' <<<$(PREFIX))\/lib\/bash-util\//' < $< > $@
+		echo -n $(PREFIX) | sed 's/\([$\/]\)/\\\1/g')\/lib\/bash-util\//' < $< > $@
 	chmod 755 $@
 
 dist/lib/bash-util:
