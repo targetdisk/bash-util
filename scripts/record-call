@@ -5,6 +5,8 @@
   * (just the audio on my end)
   '
 
+. "$(dirname $0)/util/logging.bash"
+
 read -d '' usage <<EOUSAGE
 Usage: $0 [-h]
 
@@ -25,9 +27,7 @@ done
 
 shift $((OPTIND-1))
 
-. "$(dirname $0)/util/logging.bash"
-
-rec_prefix="$HOME/librecode/Julia Calls 😻"
+rec_prefix="$HOME/librecode/Julia Calls 😻/mine"
 mkdir -p "$rec_prefix"
 
 timestamp=$(mktimestamp)

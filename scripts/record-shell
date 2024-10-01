@@ -4,6 +4,8 @@
   * Record sessions with Asciinema for the Librecode project!
   '
 
+. "$(dirname $0)/util/logging.bash"
+
 read -d '' usage <<EOUSAGE
 Usage: $0 [-h]
 
@@ -24,7 +26,6 @@ done
 
 shift $((OPTIND-1))
 
-. "$(dirname $0)/util/logging.bash"
 . /etc/os-release
 
 timestamp=$(mktimestamp)
