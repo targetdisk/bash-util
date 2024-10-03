@@ -6,23 +6,28 @@
 
 . "$(dirname $0)/util/logging.bash"
 
-FONT="monofur for Powerline"
+FONT='monofur for Powerline'
+EXTENSION='.pdf'
 
 read -d '' usage <<EOUSAGE
-Usage: $0 [-h][-f FONT] RESUME_FILE
+Usage: $0 [-h][-f FONT][-t] RESUME_FILE
 
 OPTIONS
     -f FONT  Specify font by name.
     -h  Display this help.
+    -t Compile intermediate TeX instead of PDF.
 EOUSAGE
 
-while getopts 'f:h' opt; do
+while getopts 'f:ht' opt; do
   case "${opt}" in
     f)
       FONT=$OPTARG
       ;;
     h)
       excat "$usage"
+      ;;
+    t)
+      EXTENSION='.tex'
       ;;
     *)
       dedcat "$usage"
@@ -34,7 +39,7 @@ shift $((OPTIND-1))
 [ -z "$1" ] && dedcat "$usage"
 
 pandoc $1 \
-  -o $(sed 's/\(.md\)$//' <<<$1).pdf \
+  -o $(sed 's/\(.md\)$//' <<<$1)"$EXTENSION" \
   --pdf-engine=xelatex \
   -V mainfont="$FONT" \
   -V fontsize=9pt \
