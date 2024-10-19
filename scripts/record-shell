@@ -13,10 +13,15 @@ OPTIONS
     -h  Display this help.
 EOUSAGE
 
-while getopts 'h' opt; do
+SPOOPY_STDIN=''
+
+while getopts 'hi' opt; do
   case "${opt}" in
     h)
       excat "$usage"
+      ;;
+    i)
+      SPOOPY_STDIN='--stdin'
       ;;
     *)
       dedcat "$usage"
@@ -45,4 +50,4 @@ esac
 rec_prefix="$HOME/librecode/sessions/mine/$ID/$SUB_ID"
 mkdir -p "$rec_prefix"
 
-asciinema rec "$rec_prefix/$timestamp"
+asciinema rec $SPOOPY_STDIN "$rec_prefix/$timestamp"
