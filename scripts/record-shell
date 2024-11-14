@@ -7,10 +7,11 @@
 . "$(dirname $0)/util/logging.bash"
 
 read -d '' usage <<EOUSAGE
-Usage: $0 [-h]
+Usage: $0 [-h|-i]
 
 OPTIONS
     -h  Display this help.
+    -i  Record stdin. (BE CAREFUL WITH SECRETS!)
 EOUSAGE
 
 SPOOPY_STDIN=''
